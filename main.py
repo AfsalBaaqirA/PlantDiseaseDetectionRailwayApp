@@ -3,6 +3,34 @@ from flask import request, jsonify,Flask
 from werkzeug.datastructures import MultiDict
 from tensorflow import keras
 import json
+import requests
+
+
+
+def download_file_from_google_drive(donwload_url, destination_path):
+    response = requests.get(donwload_url, stream=True)
+
+    if response.status_code == 200:
+        with open(destination_path, "wb") as f:
+            for chunk in response.iter_content(1024):
+                f.write(chunk)
+        return True
+    else:
+        return False
+
+download_url = "https://download1477.mediafire.com/60ydhdofu25gBnh985LH7ji1LWRltRqx-HUtInpYeJoZagIjdr0zOrfB5686KI-iKep28a35n_SvgaB-TgiGOB7v_rCmyA0dISdk2PiQY1xxbw0socyz9ro9ZPeX5nOH2WoCd_bRLPtaCj7DgrzGkps0G7C-DoMtPYLW182wbkNE4Q/flutyxp1xc2op7o/PlantDiseaseDetectionModel.h5"  
+destination_path = "PlantDiseaseDetectionModel.h5"
+
+if not os.path.exists("PlantDiseaseDetectionModel.h5"):
+    success = download_file_from_google_drive(download_url, destination_path)    
+    if success:
+        print("File downloaded successfully.")
+    else:
+        print("Error occurred while downloading the file.")
+
+    
+
+
 
 app = Flask(__name__)
 
@@ -67,3 +95,4 @@ def predict():
 
 if __name__ == '__main__':
     app.run(debug=True, port=os.getenv("PORT", default=5000)) #type: ignore
+
