@@ -4,6 +4,8 @@ from werkzeug.datastructures import MultiDict
 from tensorflow import keras
 import json
 import requests
+from PIL import Image
+import numpy as np
 
 
 
@@ -28,8 +30,6 @@ if not os.path.exists("PlantDiseaseDetectionModel.h5"):
     else:
         print("Error occurred while downloading the file.")
 
-    
-
 
 
 app = Flask(__name__)
@@ -47,9 +47,16 @@ def predict():
         if img_file:
             img_file.save(img_file.filename) # type: ignore
             # Preprocess the image
-            image = keras.preprocessing.image.load_img(img_file.filename, target_size=(256, 256))
-            image = keras.preprocessing.image.img_to_array(image)
-            image = image / 255.0  # Normalize the image
+            image = Image.open(img_file.filename) # type: ignore
+
+            # Resize the image to the target size
+            image = image.resize((256, 256))
+
+            # Convert the image to a numpy array
+            image = np.array(image)
+
+            # Normalize the image
+            image = image / 255.0
             # Reshape the image to match the model's input shape
             image = image.reshape((1, 256, 256, 3))
             # Perform the prediction
