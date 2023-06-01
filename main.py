@@ -4,7 +4,6 @@ from werkzeug.datastructures import MultiDict
 from tensorflow import keras
 import json
 import requests
-from PIL import Image
 
 
 
